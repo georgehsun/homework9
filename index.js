@@ -24,7 +24,7 @@ function promptUser() {
             message: "Please write a short description of your project?"
         },
         {
-            type: "input",
+            type: "list",
             name: "license",
             choices: ["ISC", "MIT", "BSD"],
             message: "What kind of license should your project have? User can choose from list of items?"

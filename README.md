@@ -2,8 +2,8 @@
 [![GitHub license](https://img.shields.io/badge/license-GPL%203.0-blue.svg)](https://github.com/calvincarter/demo_day_project2)
 ​
 ## Description
-​
-the best project ever project
+​This project is suppose to generate a readme 
+
 ​
 ## Table of Contents 
 ​
