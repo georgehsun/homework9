@@ -51,4 +51,4 @@ npm test
 ​
 <img src="https://avatars1.githubusercontent.com/u/4831868?v=4" alt="avatar" style="border-radius: 16px" width="30" />
 ​
-If you have any questions about the repo, open an issue or contact [calvincarter](https://api.github.com/users/calvincarter).
+If you have any questions about the repo, open an issue or contact [calvincarter](https://api.github.com/users/georgehsun).

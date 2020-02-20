@@ -1,145 +1,177 @@
 const inquirer = require("inquirer");
-const axios = require("axios");
 const fs = require("fs");
 const util = require("util");
+const axios = require("axios");
 
-//const writeFileAsync = util.promisify(fs.writeFile);
-
-function promptUser() {
-    return inquirer.prompt([{
-            type: "input",
-            name: "github_username",
-            message: "What is your GitHub username? "
-        },
-
-
-        {
-            type: "input",
-            name: "project_name",
-            message: "What is your project's name?"
-        },
-        {
-            type: "input",
-            name: "description",
-            message: "Please write a short description of your project?"
-        },
-        {
-            type: "list",
-            name: "license",
-            choices: ["ISC", "MIT", "BSD"],
-            message: "What kind of license should your project have? User can choose from list of items?"
-        },
-        {
-            type: "input",
-            name: "dependencies",
-            message: "What command should be run to install dependencies? "
-        },
-        {
-            type: "input",
-            name: "tests",
-            message: "What command should be run to run tests? "
-        },
-        {
-            type: "input",
-            name: "using_repo",
-            message: "What does the user need to know about using the repo?"
-        },
-        {
-            type: "input",
-            name: "contributing_repo",
-            message: "What does the user need to know about contributing to the repo?"
-        }
-    ]);
-}
 
 const writeFileAsync = util.promisify(fs.writeFile);
 
-function writeToFile(fileName, data) {
-    let fileContents =
-        `# ${dataproject_name}
+const questions = [{
+        type: "input",
+        name: "myGithub",
+        message: "What is your Github username?"
+    },
+    {
+        type: "input",
+        name: "myProject",
+        message: "What is the name of your Project?"
+    },
+    {
+        type: "input",
+        name: "myDescription",
+        message: "Give a description of your Project"
+    },
 
-    [![GitHub license](https://img.shields.io/badge/license-GPL%203.0-blue.svg)](https://github.com/calvincarter/demo_day_project2)
-    ​
-    ## Description
-    ${data.description}
-    ​
-    the best project ever project
-    ​
-    ## Table of Contents 
-    ​
-    * [Installation](#installation)
-    ​
-    * [Usage](#usage)
-    ​
-    * [License](#license)
-    ​
-    * [Contributing](#contributing)
-    ​
-    * [Tests](#tests)
-    ​
-    * [Questions](#questions)
-    ​
-    ## Installation
-    ​
-    To install necessary dependencies, run the following command:
+    {
+        type: "input",
+        name: "myInstall",
+        message: "What command should be run to install dependencies?",
+        default: "npm i"
+    },
+    {
+        type: "input",
+        name: "myInstructions",
+        message: "Provide instructions and examples for use"
+    },
+    {
+        type: "input",
+        name: "myCollabs",
+        message: "List collaborators and third-party assets"
+    },
+    {
+        type: "list",
+        name: "myLicense",
+        message: "What license did you use?",
+        choices: ["MIT", "BSD", "GNU"]
+    },
+    {
+        type: "input",
+        name: "myTests",
+        message: "What command should be run to run tests?",
+        default: "npm test"
+    },
+    {
+        type: "input",
+        name: "myContribution",
+        message: "What does the user need to know about contributing to the repo?"
+    }
+
+];
+
+//.then(function(answer) {
+//     console.log(answer)
+
+// })
+
+function promptUser() {
+    return inquirer.prompt(questions);
+};
+
+function generateREADME(answer, image, banner) {
+    return `# ${answer.myProject}
+##    
+${banner}
+## Description 
     
-    ${data.dependencies}
-    ​
-   
-    npm i
-       
-    ​
-    ## Usage
-    ​
-    nothing just welcome all hands on deck
-    ​
-    ## License
-    ​
-    This project is licensed under the ${data.license} license.
-      
-    ## Contributing
-    ​${data.contributing_repo}
-    please help
+${answer.myDescription}
+    
+## Table of Contents
+    
+    
+* [Installation](#installation)
+* [Usage](#usage)
+* [Credits](#credits)
+* [License](#license)
+    
+    
+## Installation
+    
+${answer.myInstall}
+    
+## Usage 
+    
+${answer.myInstructions}
+    
+## Credits
+    
+${answer.myCollabs}
+    
+## License
+    
+${answer.myLicense}
+## Tests
+${answer.myTests}
+## Contributing
+${answer.myContribution}
+![My Avatar](${image})
+`
+}
+// ![My Avatar] (${avatar_url})
 
-    ​
-    ## Tests
-    ​
-    To run tests, run the following command:
-    ${data.tests}
-    ​
-    ​
-    ## Questions
-    ​
-    <img src="${data.avatar_url}" alt="avatar" style="border-radius: 16px" width="30" />
-    ​
-    If you have any questions about the repo, open an issue or contact [${data.github_username}](https://api.github.com/users/${data.login}).`
+
+
+
+async function getImage(username) {
+    try {
+        const queryUrl = "https://api.github.com/users/" + username;
+
+        const response = await axios.get(queryUrl);
+        const avatar_url = await response.data.avatar_url;
+
+        // console.log(avatar_url);
+
+        return avatar_url
+
+    } catch (error) {
+        console.error(error);
+    }
+
+
+};
+async function getBadge(license) {
+    try {
+        if (license === "MIT") {
+            return "[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)";
+        };
+        if (license === "BSD") {
+            return "[![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)"
+        };
+
+        if (license === "GNU") {
+            return "[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0)"
+        };
+
+    } catch (error) {
+        console.log(error)
+    }
+};
+
+async function init() {
+    console.log("Fill in the prompts to create the readme file:");
+
+    try {
+        const answers = await promptUser();
+
+        const username = answers.myGithub;
+
+        const image = await getImage(username);
+
+        const license = answers.myLicense;
+
+        const banner = await getBadge(license);
+
+        const md = generateREADME(answers, image, banner);
+
+
+
+
+        await writeFileAsync("goodREADME.md", md);
+
+        console.log("Successfully wrote to README.md");
+
+    } catch (err) {
+        console.log(err);
+    }
 }
 
-function generateReadMe() {
-    inquirer.prompt(questions).then(function(answers) {
-        console.log(answers);
-        const user = answers;
-        axios.get(`https://api.github.com/users/${user.github_username}`).then(resp => {
-            user.avatar_url = resp.data.avatar_url;
-            writeToFile("README.md", user);
-        })
-    });
-}
-
-// async function init() {
-//     console.log("hi")
-//     try {
-//         const answers = await promptUser();
-
-//         const html = generateHTML(answers);
-
-//         await writeFileAsync("index.html", html);
-
-//         console.log("Successfully wrote to index.html");
-//     } catch (err) {
-//         console.log(err);
-//     }
-// }
-
-// generateReadMe();
-promptUser();
+init();
