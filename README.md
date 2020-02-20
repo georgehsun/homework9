@@ -44,6 +44,8 @@ please help
 ## Tests
 ​
 To run tests, run the following command:
+![ezgif com-video-to-gif](https://user-images.githubusercontent.com/57238759/74893666-8874c880-5352-11ea-87a6-eccfe3ad3ee6.gif)
+
 ​
 ```
 npm test
